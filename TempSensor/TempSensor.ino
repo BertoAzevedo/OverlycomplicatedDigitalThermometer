@@ -7,8 +7,8 @@
 #include <ESP8266WebServer.h>
 
 // Set up WiFi
-const char* ssid = "network";  // Enter SSID here
-const char* password = "password";  //Enter Password here
+const char* ssid = "<network>";  // Enter SSID here
+const char* password = "<password>";  //Enter Password here
 
 ESP8266WebServer server(80);
 
@@ -196,9 +196,18 @@ String SendHTML(float t, float h) {
 void loop() {
   delay(1000);
 
-  //read temperature and humidity
-  t = dht.readTemperature();
-  h = dht.readHumidity();
+  static const unsigned long REFRESH_INTERVAL = 1*60*1000; // ms
+  static unsigned long lastRefreshTime = 0;
+  
+  if(millis() - lastRefreshTime >= REFRESH_INTERVAL)
+  {
+    lastRefreshTime += REFRESH_INTERVAL;
+    
+    // Read temperature and humidity from sensor
+    t = dht.readTemperature();
+    h = dht.readHumidity();
+    
+  }
 
   if (isnan(h) || isnan(t)) {
     Serial.println("Failed to read from DHT sensor!");
